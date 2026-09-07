@@ -40,3 +40,58 @@ body {
 .mode-pointer * {
   cursor: none;
 }
+
+/* ---------------------------------------------------------------- lantern */
+
+.lantern {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 60;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.lantern-glow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 46rem;
+  height: 46rem;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 0;
+  transition:
+    opacity 1.6s ease-out,
+    transform 1.6s cubic-bezier(0.2, 0.6, 0.3, 1);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(224, 168, 96, 0.17) 0%,
+    rgba(198, 138, 75, 0.11) 22%,
+    rgba(140, 90, 45, 0.055) 45%,
+    rgba(0, 0, 0, 0) 68%
+  );
+}
+
+.lantern.is-lit .lantern-glow {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.lantern.is-ember .lantern-glow {
+  opacity: 0.55;
+  transform: translate(-50%, -50%) scale(0.2);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lantern-glow {
+    transition: opacity 0.8s linear;
+  }
+  .lantern.is-lit .lantern-glow {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
