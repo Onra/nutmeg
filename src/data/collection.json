@@ -8,6 +8,7 @@
     "imageUrl": "https://media-proxy.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/116003251.png",
     "generatorUrl": "https://generator.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/116003251",
     "renderGenerator": false,
+    "audio": false,
     "externalUrl": "https://www.artblocks.io/token/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/116003251",
     "features": {
       "Rings": "3",
@@ -35,6 +36,7 @@
     "imageUrl": "https://media-proxy.artblocks.io/1/0x99a9b7c1116f9ceeb1652de04d5969cce509b069/482000387.png",
     "generatorUrl": "https://generator.artblocks.io/1/0x99a9b7c1116f9ceeb1652de04d5969cce509b069/482000387",
     "renderGenerator": false,
+    "audio": false,
     "externalUrl": "https://www.artblocks.io/token/1/0x99a9b7c1116f9ceeb1652de04d5969cce509b069/482000387",
     "features": {
       "Palette": "The Coast",
@@ -62,6 +64,7 @@
     "imageUrl": "https://media-proxy.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/284000852.png",
     "generatorUrl": "https://generator.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/284000852",
     "renderGenerator": true,
+    "audio": false,
     "externalUrl": "https://www.artblocks.io/token/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/284000852",
     "features": {
       "Biome": "Arctic",
@@ -88,7 +91,8 @@
     "editionNumber": 18710,
     "imageUrl": "https://media-proxy.artblocks.io/1/0x942bc2d3e7a589fe5bd4a5c6ef9727dfd82f5c8a/18710.png",
     "generatorUrl": "https://generator.artblocks.io/1/0x942bc2d3e7a589fe5bd4a5c6ef9727dfd82f5c8a/18710",
-    "renderGenerator": false,
+    "renderGenerator": true,
+    "audio": false,
     "externalUrl": "https://www.artblocks.io/token/1/0x942bc2d3e7a589fe5bd4a5c6ef9727dfd82f5c8a/18710",
     "features": {
       "Fill": "Taaaaall",
@@ -110,7 +114,8 @@
     "editionNumber": 18706,
     "imageUrl": "https://media-proxy.artblocks.io/1/0x942bc2d3e7a589fe5bd4a5c6ef9727dfd82f5c8a/18706.png",
     "generatorUrl": "https://generator.artblocks.io/1/0x942bc2d3e7a589fe5bd4a5c6ef9727dfd82f5c8a/18706",
-    "renderGenerator": false,
+    "renderGenerator": true,
+    "audio": false,
     "externalUrl": "https://www.artblocks.io/token/1/0x942bc2d3e7a589fe5bd4a5c6ef9727dfd82f5c8a/18706",
     "features": {
       "Fill": "Smol",
@@ -133,6 +138,7 @@
     "imageUrl": "https://media-proxy.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/116004073.png",
     "generatorUrl": "https://generator.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/116004073",
     "renderGenerator": false,
+    "audio": false,
     "externalUrl": "https://www.artblocks.io/token/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/116004073",
     "features": {
       "Rings": "1",
@@ -160,6 +166,7 @@
     "imageUrl": "https://media-proxy.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/284000365.png",
     "generatorUrl": "https://generator.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/284000365",
     "renderGenerator": true,
+    "audio": false,
     "externalUrl": "https://www.artblocks.io/token/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/284000365",
     "features": {
       "Biome": "Swamp",
@@ -186,7 +193,8 @@
     "editionNumber": 40,
     "imageUrl": "https://media-proxy.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/345000040.png",
     "generatorUrl": "https://generator.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/345000040",
-    "renderGenerator": false,
+    "renderGenerator": true,
+    "audio": true,
     "externalUrl": "https://www.artblocks.io/token/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/345000040",
     "features": {
       "Mode": "DORIAN",
@@ -216,6 +224,7 @@
     "imageUrl": "https://media-proxy.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/116001010.png",
     "generatorUrl": "https://generator.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/116001010",
     "renderGenerator": false,
+    "audio": false,
     "externalUrl": "https://www.artblocks.io/token/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/116001010",
     "features": {
       "Rings": "0",
@@ -243,6 +252,7 @@
     "imageUrl": "https://media-proxy.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/43000153.png",
     "generatorUrl": "https://generator.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/43000153",
     "renderGenerator": true,
+    "audio": false,
     "externalUrl": "https://www.artblocks.io/token/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/43000153",
     "features": {
       "Character": "moon",

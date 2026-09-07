@@ -278,6 +278,18 @@ body {
   border: 0;
 }
 
+/* Sounding pieces need a gesture before the browser lets them play. */
+.plaque-audio-hint {
+  margin: 0.75rem 0 0;
+  text-align: center;
+  font-family: var(--mono);
+  font-weight: 300;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--parchment-dim);
+  opacity: 0.8;
+}
+
 /* Images and live views arrive from the network; they cross-fade in over
    the spotlight instead of popping (the procedural canvas draws instantly
    and skips this). */

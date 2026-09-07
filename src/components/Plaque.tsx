@@ -88,6 +88,11 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
               <ProceduralArt piece={piece} />
             )}
           </div>
+          {piece.audio && live && (
+            <figcaption className="plaque-audio-hint">
+              ♪ &nbsp;click the piece to hear it
+            </figcaption>
+          )}
         </figure>
         <div className="plaque-panel">
           <h2 id="plaque-title" className="plaque-title">

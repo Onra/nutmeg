@@ -20,6 +20,9 @@ export interface Piece {
   /** When true (and generatorUrl exists), the plaque shows the piece
    *  "alive" in an iframe instead of the static snapshot. */
   renderGenerator?: boolean
+  /** The piece emits sound in its live view. Browsers only start audio on a
+   *  user gesture, so the plaque adds a quiet hint to click the render. */
+  audio?: boolean
   externalUrl?: string
   features: Record<string, string>
   mintDate: string
