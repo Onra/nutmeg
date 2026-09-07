@@ -37,6 +37,16 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
     }
   }, [hd, live])
 
+  // `o` opens the piece on Art Blocks while its plaque is up.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'o' || e.metaKey || e.ctrlKey || e.altKey || e.repeat) return
+      if (piece.externalUrl) window.open(piece.externalUrl, '_blank', 'noopener,noreferrer')
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [piece.externalUrl])
+
   const year = piece.mintDate.slice(0, 4)
   const featureEntries = Object.entries(piece.features)
 
@@ -101,7 +111,7 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
           )}
           {piece.externalUrl && (
             <a className="plaque-link" href={piece.externalUrl} target="_blank" rel="noreferrer">
-              view on art blocks
+              o — view on art blocks
             </a>
           )}
         </div>

@@ -59,6 +59,9 @@ exploring). Move with the arrow keys or `j`/`k`, Enter opens the piece,
 Escape or a click outside closes. On touch devices the index arrives as a
 bottom sheet instead, opened from a slim handle at the bottom edge.
 
+While a piece is raised on its pedestal, `o` opens it on Art Blocks in a
+new tab (the plaque's link carries the same hint).
+
 ## Accessibility
 
 - Points are real buttons: Tab reaches them, Enter opens the plaque, Escape
