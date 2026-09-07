@@ -11,7 +11,10 @@ import type { Piece } from '../types'
  * needs to change either way.
  */
 export async function loadCollection(): Promise<Piece[]> {
-  return raw as Piece[]
+  // The JSON import infers a union of literal feature keys per entry, which
+  // is not directly comparable to Record<string, string> — widen through
+  // unknown; the shape is guaranteed by hand-curation (or the fetch script).
+  return raw as unknown as Piece[]
 }
 
 /**
