@@ -1,0 +1,42 @@
+:root {
+  --bg: #100c09;
+  --bg-deep: #0a0705;
+  --panel: #14100b;
+  --nutmeg: #c68a4b;
+  --nutmeg-bright: #e0a860;
+  --nutmeg-dim: #8a5f33;
+  --parchment: #d8c9b0;
+  --parchment-dim: #a08e73;
+  --serif: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino', Georgia, serif;
+  --mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--parchment);
+  font-family: var(--serif);
+  overflow: hidden;
+}
+
+.room {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(120% 100% at 50% 45%, var(--panel) 0%, var(--bg) 55%, var(--bg-deep) 100%);
+}
+
+/* The lantern is the cursor on fine-pointer devices. */
+.mode-pointer,
+.mode-pointer * {
+  cursor: none;
+}
