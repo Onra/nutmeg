@@ -57,8 +57,8 @@ body {
   position: absolute;
   left: 0;
   top: 0;
-  width: 46rem;
-  height: 46rem;
+  width: 28rem;
+  height: 28rem;
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(0.5);
   opacity: 0;
@@ -194,13 +194,24 @@ body {
   padding: 4vmin;
   background: rgba(8, 6, 4, 0.88);
   backdrop-filter: blur(5px);
-  animation: plaque-in 0.45s ease both;
+  animation: backdrop-in 0.5s ease both;
 }
 
-@keyframes plaque-in {
+/* Staged entrance: the room dims first, the artwork rises out of the dark,
+   then the plaque settles beneath it. */
+@keyframes backdrop-in {
   from {
     opacity: 0;
-    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.965);
   }
   to {
     opacity: 1;
@@ -222,6 +233,12 @@ body {
 
 .plaque-art {
   margin: 0;
+  animation: rise-in 0.7s cubic-bezier(0.22, 0.7, 0.3, 1) 0.1s both;
+}
+
+.plaque-panel,
+.plaque-close {
+  animation: rise-in 0.7s cubic-bezier(0.22, 0.7, 0.3, 1) 0.28s both;
 }
 
 .plaque-art img,
@@ -366,7 +383,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .plaque-backdrop {
+  .plaque-backdrop,
+  .plaque-art,
+  .plaque-panel,
+  .plaque-close {
     animation: none;
   }
 }

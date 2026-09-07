@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 
 /** Distance (px) within which the lantern starts to reveal a point. */
-const REVEAL_RADIUS = 210
+const REVEAL_RADIUS = 160
 
 interface RegisteredPoint {
   el: HTMLElement
