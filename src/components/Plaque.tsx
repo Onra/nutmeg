@@ -13,6 +13,7 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
   useFocusTrap(dialogRef, onClose)
 
+  const [thumbReady, setThumbReady] = useState(false)
   const [hdReady, setHdReady] = useState(false)
   const [imgFailed, setImgFailed] = useState(false)
   const thumb = piece.imageUrl ? mediaVariant(piece.imageUrl, 'thumb') : null
@@ -20,6 +21,7 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
 
   // The thumb renders immediately; the HD snapshot swaps in once cached.
   useEffect(() => {
+    setThumbReady(false)
     setHdReady(false)
     setImgFailed(false)
     if (!hd) return
@@ -50,15 +52,21 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
         tabIndex={-1}
       >
         <figure className="plaque-art">
-          {thumb && !imgFailed ? (
-            <img
-              src={hdReady && hd ? hd : thumb}
-              alt={`${piece.projectName} #${piece.editionNumber} by ${piece.artist}`}
-              onError={() => setImgFailed(true)}
-            />
-          ) : (
-            <ProceduralArt piece={piece} />
-          )}
+          {/* Fixed-size stage: the artwork fades in over its spotlight, so
+              loading never reflows the plaque or spawns scrollbars. */}
+          <div className="plaque-stage">
+            {thumb && !imgFailed ? (
+              <img
+                className={thumbReady ? 'is-loaded' : undefined}
+                src={hdReady && hd ? hd : thumb}
+                alt={`${piece.projectName} #${piece.editionNumber} by ${piece.artist}`}
+                onLoad={() => setThumbReady(true)}
+                onError={() => setImgFailed(true)}
+              />
+            ) : (
+              <ProceduralArt piece={piece} />
+            )}
+          </div>
         </figure>
         <div className="plaque-panel">
           <h2 id="plaque-title" className="plaque-title">

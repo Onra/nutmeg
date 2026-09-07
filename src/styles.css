@@ -195,6 +195,10 @@ body {
   background: rgba(8, 6, 4, 0.88);
   backdrop-filter: blur(5px);
   animation: backdrop-in 0.5s ease both;
+  /* Scrolling lives on the backdrop, never on the plaque itself, so the
+     entrance animation can't flash a scrollbar inside the pedestal. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 /* Staged entrance: the room dims first, the artwork rises out of the dark,
@@ -226,9 +230,8 @@ body {
   align-items: center;
   gap: 1.4rem;
   max-width: min(92vw, 640px);
-  max-height: 100%;
+  margin: auto;
   outline: none;
-  overflow-y: auto;
 }
 
 .plaque-art {
@@ -241,17 +244,38 @@ body {
   animation: rise-in 0.7s cubic-bezier(0.22, 0.7, 0.3, 1) 0.28s both;
 }
 
+/* The stage reserves the artwork's footprint before anything loads: a
+   fixed frame lit by a faint spotlight, into which the piece fades. */
+.plaque-stage {
+  display: grid;
+  place-items: center;
+  width: min(86vw, 540px);
+  height: min(54vh, 540px);
+  background: radial-gradient(60% 60% at 50% 45%, rgba(198, 138, 75, 0.06), rgba(0, 0, 0, 0) 75%);
+}
+
 .plaque-art img,
 .plaque-art canvas {
   display: block;
-  max-width: min(86vw, 540px);
-  max-height: 54vh;
+  max-width: 100%;
+  max-height: 100%;
   width: auto;
   height: auto;
   background: var(--bg-deep);
   box-shadow:
     0 30px 80px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(198, 138, 75, 0.12);
+}
+
+/* Images arrive from the network; they cross-fade in over the spotlight
+   instead of popping (the procedural canvas draws instantly and skips this). */
+.plaque-art img {
+  opacity: 0;
+  transition: opacity 0.8s ease 0.1s;
+}
+
+.plaque-art img.is-loaded {
+  opacity: 1;
 }
 
 .plaque-panel {
