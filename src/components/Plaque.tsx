@@ -111,7 +111,7 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
           )}
           {piece.externalUrl && (
             <a className="plaque-link" href={piece.externalUrl} target="_blank" rel="noreferrer">
-              o — view on art blocks
+              view on art blocks
             </a>
           )}
         </div>
