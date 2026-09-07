@@ -258,7 +258,8 @@ body {
 }
 
 .plaque-art img,
-.plaque-art canvas {
+.plaque-art canvas,
+.plaque-art iframe {
   display: block;
   max-width: 100%;
   max-height: 100%;
@@ -270,14 +271,24 @@ body {
     0 0 0 1px rgba(198, 138, 75, 0.12);
 }
 
-/* Images arrive from the network; they cross-fade in over the spotlight
-   instead of popping (the procedural canvas draws instantly and skips this). */
-.plaque-art img {
+/* The live generative view fills the whole stage. */
+.plaque-art iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Images and live views arrive from the network; they cross-fade in over
+   the spotlight instead of popping (the procedural canvas draws instantly
+   and skips this). */
+.plaque-art img,
+.plaque-art iframe {
   opacity: 0;
   transition: opacity 0.8s ease 0.1s;
 }
 
-.plaque-art img.is-loaded {
+.plaque-art img.is-loaded,
+.plaque-art iframe.is-loaded {
   opacity: 1;
 }
 

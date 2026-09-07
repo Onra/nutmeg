@@ -17,6 +17,9 @@ export interface Piece {
   imageUrl?: string
   /** Live generative view (iframe-able); heavier than an <img>, optional. */
   generatorUrl?: string
+  /** When true (and generatorUrl exists), the plaque shows the piece
+   *  "alive" in an iframe instead of the static snapshot. */
+  renderGenerator?: boolean
   externalUrl?: string
   features: Record<string, string>
   mintDate: string

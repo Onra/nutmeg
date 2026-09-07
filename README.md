@@ -27,6 +27,10 @@ fetching). Both `media.artblocks.io/{tokenId}.png` URLs (where `thumb/` and
 `hd/` variants load progressively) and `media-proxy.artblocks.io/...` URLs
 are supported.
 
+Per piece, **`renderGenerator: true`** makes the plaque show the live,
+iframe-embedded generative view (`generatorUrl`) instead of the static
+snapshot — heavier than an `<img>`, so opt in per piece.
+
 One field deserves a note: **`rarity`** (`legendary` / `rare` / `common`)
 is *not* Art Blocks metadata — it is an optional curatorial assignment.
 Pieces that carry it get the size/intensity point encoding and a rarity

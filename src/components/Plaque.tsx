@@ -15,23 +15,27 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
 
   const [thumbReady, setThumbReady] = useState(false)
   const [hdReady, setHdReady] = useState(false)
+  const [liveReady, setLiveReady] = useState(false)
   const [imgFailed, setImgFailed] = useState(false)
+  const live = Boolean(piece.renderGenerator && piece.generatorUrl)
   const thumb = piece.imageUrl ? mediaVariant(piece.imageUrl, 'thumb') : null
   const hd = piece.imageUrl ? mediaVariant(piece.imageUrl, 'hd') : null
 
   // The thumb renders immediately; the HD snapshot swaps in once cached.
+  // Pieces shown alive skip the snapshot pipeline entirely.
   useEffect(() => {
     setThumbReady(false)
     setHdReady(false)
+    setLiveReady(false)
     setImgFailed(false)
-    if (!hd) return
+    if (!hd || live) return
     const img = new Image()
     img.onload = () => setHdReady(true)
     img.src = hd
     return () => {
       img.onload = null
     }
-  }, [hd])
+  }, [hd, live])
 
   const year = piece.mintDate.slice(0, 4)
   const featureEntries = Object.entries(piece.features)
@@ -55,7 +59,14 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
           {/* Fixed-size stage: the artwork fades in over its spotlight, so
               loading never reflows the plaque or spawns scrollbars. */}
           <div className="plaque-stage">
-            {thumb && !imgFailed ? (
+            {live ? (
+              <iframe
+                className={liveReady ? 'is-loaded' : undefined}
+                src={piece.generatorUrl}
+                title={`${piece.projectName} #${piece.editionNumber} — live generative view`}
+                onLoad={() => setLiveReady(true)}
+              />
+            ) : thumb && !imgFailed ? (
               <img
                 className={thumbReady ? 'is-loaded' : undefined}
                 src={hdReady && hd ? hd : thumb}
