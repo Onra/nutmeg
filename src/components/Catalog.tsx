@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Piece } from '../types'
 
 interface CatalogProps {
@@ -17,16 +17,35 @@ interface CatalogProps {
 export function Catalog({ pieces, variant, onSelect, onClose }: CatalogProps) {
   const [selected, setSelected] = useState(0)
   const listRef = useRef<HTMLDivElement>(null)
-  const stateRef = useRef({ pieces, selected, onSelect, onClose })
-  stateRef.current = { pieces, selected, onSelect, onClose }
+
+  // Pieces grouped by project (in order of first appearance); selection and
+  // the running catalog numbers follow the grouped display order.
+  const groups = useMemo(() => {
+    const byProject = new Map<string, { artist: string; items: Piece[] }>()
+    for (const piece of pieces) {
+      const group = byProject.get(piece.projectName)
+      if (group) group.items.push(piece)
+      else byProject.set(piece.projectName, { artist: piece.artist, items: [piece] })
+    }
+    let start = 0
+    return [...byProject.entries()].map(([project, { artist, items }]) => {
+      const group = { project, artist, items, start }
+      start += items.length
+      return group
+    })
+  }, [pieces])
+  const ordered = useMemo(() => groups.flatMap((group) => group.items), [groups])
+
+  const stateRef = useRef({ ordered, selected, onSelect, onClose })
+  stateRef.current = { ordered, selected, onSelect, onClose }
 
   useEffect(() => {
     listRef.current?.focus({ preventScroll: true })
     const onKeyDown = (e: KeyboardEvent) => {
-      const { pieces, selected, onSelect, onClose } = stateRef.current
+      const { ordered, selected, onSelect, onClose } = stateRef.current
       const step = (delta: number) => {
         e.preventDefault()
-        setSelected((current) => (current + delta + pieces.length) % pieces.length)
+        setSelected((current) => (current + delta + ordered.length) % ordered.length)
       }
       switch (e.key) {
         case 'ArrowDown':
@@ -39,7 +58,7 @@ export function Catalog({ pieces, variant, onSelect, onClose }: CatalogProps) {
           break
         case 'Enter':
           e.preventDefault()
-          onSelect(pieces[selected])
+          onSelect(ordered[selected])
           break
         case 'Escape':
           e.preventDefault()
@@ -70,20 +89,32 @@ export function Catalog({ pieces, variant, onSelect, onClose }: CatalogProps) {
         aria-activedescendant={`catalog-item-${selected}`}
         tabIndex={-1}
       >
-        {pieces.map((piece, i) => (
-          <div
-            key={piece.tokenId}
-            id={`catalog-item-${i}`}
-            role="option"
-            aria-selected={i === selected}
-            className={i === selected ? 'catalog-item is-selected' : 'catalog-item'}
-            onClick={() => onSelect(piece)}
-            onMouseEnter={() => setSelected(i)}
-          >
-            <span className="catalog-item-no">{String(i + 1).padStart(2, '0')}</span>
-            <span className="catalog-item-name">
-              {piece.projectName} <em>#{piece.editionNumber}</em>
-            </span>
+        {groups.map((group) => (
+          <div key={group.project} role="group" aria-label={group.project} className="catalog-group">
+            <div className="catalog-group-header" aria-hidden="true">
+              <span>{group.project}</span>
+              <span className="catalog-group-artist">{group.artist}</span>
+            </div>
+            {group.items.map((piece, offset) => {
+              const i = group.start + offset
+              return (
+                <div
+                  key={piece.tokenId}
+                  id={`catalog-item-${i}`}
+                  role="option"
+                  aria-selected={i === selected}
+                  aria-label={`${piece.projectName} #${piece.editionNumber}`}
+                  className={i === selected ? 'catalog-item is-selected' : 'catalog-item'}
+                  onClick={() => onSelect(piece)}
+                  onMouseEnter={() => setSelected(i)}
+                >
+                  <span className="catalog-item-no">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="catalog-item-name">
+                    <em>#{piece.editionNumber}</em>
+                  </span>
+                </div>
+              )
+            })}
           </div>
         ))}
       </div>
