@@ -95,3 +95,89 @@ body {
     transform: translate(-50%, -50%) scale(1);
   }
 }
+
+/* ----------------------------------------------------------------- points */
+
+.field {
+  position: absolute;
+  inset: 0;
+}
+
+.point {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  /* Rest opacity encodes rarity; --near (set inline by the lantern loop)
+     or --focus (keyboard) lifts it toward full. */
+  opacity: calc(var(--rest) + max(var(--near, 0), var(--focus, 0)) * (1 - var(--rest)));
+}
+
+.point--legendary {
+  --rest: 0.34;
+  --size: 11px;
+  --halo: 34px;
+  --tone: var(--nutmeg-bright);
+}
+
+.point--rare {
+  --rest: 0.26;
+  --size: 8px;
+  --halo: 26px;
+  --tone: var(--nutmeg);
+}
+
+.point--common {
+  --rest: 0.17;
+  --size: 6px;
+  --halo: 19px;
+  --tone: var(--nutmeg-dim);
+}
+
+.point-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--size);
+  height: var(--size);
+  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+  border-radius: 50%;
+  background: var(--tone);
+  box-shadow: 0 0 var(--halo) calc(var(--size) / 2.5)
+    color-mix(in srgb, var(--tone) 55%, transparent);
+  animation: breathe var(--breathe-dur, 7s) ease-in-out var(--breathe-delay, 0s) infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.point:focus-visible {
+  outline: none;
+  --focus: 1;
+}
+
+.point:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--nutmeg) 75%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .point-core {
+    animation: none;
+    opacity: 0.8;
+  }
+}

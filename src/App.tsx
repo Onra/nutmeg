@@ -1,16 +1,27 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { Field } from './components/Field'
 import { Lantern } from './components/Lantern'
+import { loadCollection } from './data/loader'
 import { useInputMode } from './hooks/useInputMode'
 import { useLantern } from './hooks/useLantern'
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion'
+import { useSeededPositions } from './hooks/useSeededPositions'
+import type { Piece } from './types'
 
 export default function App() {
+  const [pieces, setPieces] = useState<Piece[]>([])
+  const [active, setActive] = useState<Piece | null>(null)
   const [hasInteracted, setHasInteracted] = useState(false)
   const reducedMotion = usePrefersReducedMotion()
   const inputMode = useInputMode()
+  const positions = useSeededPositions(pieces)
+
+  useEffect(() => {
+    loadCollection().then(setPieces)
+  }, [])
 
   const onFirstMove = useCallback(() => setHasInteracted(true), [])
-  const { glowRef } = useLantern({
+  const { glowRef, registerPoint } = useLantern({
     enabled: inputMode === 'pointer',
     reducedMotion,
     onFirstMove,
@@ -18,7 +29,10 @@ export default function App() {
 
   return (
     <main className={`room mode-${inputMode}`} aria-label="nutmeg — a small gallery in the dark">
-      {inputMode === 'pointer' && <Lantern glowRef={glowRef} lit={hasInteracted} dimmed={false} />}
+      <Field pieces={pieces} positions={positions} registerPoint={registerPoint} onOpen={setActive} />
+      {inputMode === 'pointer' && (
+        <Lantern glowRef={glowRef} lit={hasInteracted} dimmed={active !== null} />
+      )}
     </main>
   )
 }
