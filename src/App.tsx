@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { AmbientGlow } from './components/AmbientGlow'
+import { Catalog } from './components/Catalog'
 import { Field } from './components/Field'
 import { Lantern } from './components/Lantern'
 import { Plaque } from './components/Plaque'
@@ -17,6 +18,7 @@ export default function App() {
   const [active, setActive] = useState<Piece | null>(null)
   const [hasInteracted, setHasInteracted] = useState(false)
   const [wordmarkVisible, setWordmarkVisible] = useState(false)
+  const [catalogOpen, setCatalogOpen] = useState(false)
   const reducedMotion = usePrefersReducedMotion()
   const inputMode = useInputMode()
   const positions = useSeededPositions(pieces)
@@ -24,6 +26,17 @@ export default function App() {
   useEffect(() => {
     loadCollection().then(setPieces)
   }, [])
+
+  // `i` summons the collection index (while no plaque is up).
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'i' || e.metaKey || e.ctrlKey || e.altKey || e.repeat) return
+      if (active) return
+      setCatalogOpen((open) => !open)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [active])
 
   // On touch devices the first tap counts as "starting to explore".
   useEffect(() => {
@@ -57,6 +70,30 @@ export default function App() {
       {inputMode === 'touch' && <AmbientGlow />}
       {inputMode === 'touch' && !reducedMotion && <TapBlooms />}
       <Wordmark visible={wordmarkVisible} />
+      {inputMode === 'pointer' && (
+        <div className={wordmarkVisible ? 'shortcut-hint is-visible' : 'shortcut-hint'} aria-hidden="true">
+          i — index
+        </div>
+      )}
+      {inputMode === 'touch' && (
+        <button
+          type="button"
+          className={wordmarkVisible ? 'catalog-handle is-visible' : 'catalog-handle'}
+          aria-label="Open collection index"
+          onClick={() => setCatalogOpen(true)}
+        />
+      )}
+      {catalogOpen && (
+        <Catalog
+          pieces={pieces}
+          variant={inputMode === 'touch' ? 'sheet' : 'panel'}
+          onSelect={(piece) => {
+            setCatalogOpen(false)
+            setActive(piece)
+          }}
+          onClose={() => setCatalogOpen(false)}
+        />
+      )}
       {active && <Plaque piece={active} onClose={() => setActive(null)} />}
       <div className="grain" aria-hidden="true" />
     </main>

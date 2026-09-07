@@ -51,6 +51,14 @@ should regenerate `collection.json` in the same shape — no component changes
 needed. Each piece also carries its `generatorUrl` (the live, iframe-able
 generative view) for an eventual "shown alive" mode.
 
+## Collection index
+
+Press `i` to summon a small centered index of every piece (a discreet
+`i — index` hint sits in the bottom-right corner once you've started
+exploring). Move with the arrow keys or `j`/`k`, Enter opens the piece,
+Escape or a click outside closes. On touch devices the index arrives as a
+bottom sheet instead, opened from a slim handle at the bottom edge.
+
 ## Accessibility
 
 - Points are real buttons: Tab reaches them, Enter opens the plaque, Escape

@@ -555,3 +555,157 @@ body {
     display: none;
   }
 }
+
+/* ---------------------------------------------------------------- catalog */
+
+.catalog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 6, 4, 0.72);
+  animation: backdrop-in 0.3s ease both;
+}
+
+.catalog {
+  width: min(88vw, 320px);
+  max-height: min(60vh, 480px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--panel);
+  border: 1px solid rgba(198, 138, 75, 0.18);
+  padding: 0.9rem 0;
+  outline: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(198, 138, 75, 0.25) transparent;
+  animation: rise-in 0.3s cubic-bezier(0.22, 0.7, 0.3, 1) both;
+}
+
+.catalog-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  padding: 0.5rem 1.4rem;
+  cursor: pointer;
+  color: var(--parchment-dim);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.catalog-item-no {
+  font-family: var(--mono);
+  font-weight: 300;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+}
+
+.catalog-item-name {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.02rem;
+  letter-spacing: 0.02em;
+}
+
+.catalog-item-name em {
+  font-style: italic;
+  opacity: 0.6;
+}
+
+.catalog-item.is-selected {
+  color: var(--parchment);
+  background: rgba(198, 138, 75, 0.09);
+}
+
+.catalog-item.is-selected .catalog-item-no {
+  color: var(--nutmeg);
+}
+
+/* Touch variant: the index rises from the bottom edge as a sheet. */
+.catalog-backdrop--sheet {
+  align-items: flex-end;
+  justify-content: stretch;
+}
+
+.catalog-backdrop--sheet .catalog {
+  width: 100%;
+  max-width: none;
+  max-height: 62vh;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  padding-bottom: calc(0.9rem + env(safe-area-inset-bottom));
+  animation: sheet-up 0.35s cubic-bezier(0.22, 0.7, 0.3, 1) both;
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------- index hint & touch handle */
+
+.shortcut-hint {
+  position: fixed;
+  right: 2rem;
+  bottom: 1.6rem;
+  z-index: 30;
+  font-family: var(--mono);
+  font-weight: 300;
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  color: var(--parchment);
+  opacity: 0;
+  transition: opacity 2.5s ease;
+  pointer-events: none;
+  user-select: none;
+}
+
+.shortcut-hint.is-visible {
+  opacity: 0.22;
+}
+
+.catalog-handle {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  z-index: 30;
+  width: 72px;
+  height: 30px;
+  margin-left: -36px;
+  padding: 0;
+  border: 0;
+  background: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2.5s ease;
+}
+
+.catalog-handle::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  width: 30px;
+  height: 3px;
+  margin-left: -15px;
+  border-radius: 2px;
+  background: rgba(216, 201, 176, 0.4);
+}
+
+.catalog-handle.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-backdrop,
+  .catalog {
+    animation: none;
+  }
+}
