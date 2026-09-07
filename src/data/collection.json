@@ -61,7 +61,7 @@
     "editionNumber": 852,
     "imageUrl": "https://media-proxy.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/284000852.png",
     "generatorUrl": "https://generator.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/284000852",
-    "renderGenerator": false,
+    "renderGenerator": true,
     "externalUrl": "https://www.artblocks.io/token/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/284000852",
     "features": {
       "Biome": "Arctic",
@@ -159,7 +159,7 @@
     "editionNumber": 365,
     "imageUrl": "https://media-proxy.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/284000365.png",
     "generatorUrl": "https://generator.artblocks.io/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/284000365",
-    "renderGenerator": false,
+    "renderGenerator": true,
     "externalUrl": "https://www.artblocks.io/token/1/0xa7d8d9ef8d8ce8992df33d8b8cf4aebabd5bd270/284000365",
     "features": {
       "Biome": "Swamp",
