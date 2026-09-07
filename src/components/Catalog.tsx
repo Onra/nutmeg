@@ -9,17 +9,23 @@ interface CatalogProps {
   onClose: () => void
 }
 
+type CatalogNode =
+  | { kind: 'header'; project: string }
+  | { kind: 'item'; piece: Piece }
+
 /**
- * The collection index: a quiet list of every piece, summoned on demand.
- * Selection moves with the arrow keys or j/k, Enter opens the piece,
- * Escape (or a tap outside) returns to the dark.
+ * The collection index: pieces grouped by project, summoned on demand.
+ * Selection moves with the arrow keys or j/k over headers and editions
+ * alike; Enter opens an edition or collapses/expands a project, Escape
+ * (or a tap outside) returns to the dark. All groups start open.
  */
 export function Catalog({ pieces, variant, onSelect, onClose }: CatalogProps) {
   const [selected, setSelected] = useState(0)
+  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set())
   const listRef = useRef<HTMLDivElement>(null)
 
-  // Pieces grouped by project (in order of first appearance); selection and
-  // the running catalog numbers follow the grouped display order.
+  // Pieces grouped by project in order of first appearance. Catalog numbers
+  // are fixed per piece (grouped display order) and survive collapsing.
   const groups = useMemo(() => {
     const byProject = new Map<string, { artist: string; items: Piece[] }>()
     for (const piece of pieces) {
@@ -34,18 +40,52 @@ export function Catalog({ pieces, variant, onSelect, onClose }: CatalogProps) {
       return group
     })
   }, [pieces])
-  const ordered = useMemo(() => groups.flatMap((group) => group.items), [groups])
 
-  const stateRef = useRef({ ordered, selected, onSelect, onClose })
-  stateRef.current = { ordered, selected, onSelect, onClose }
+  // The navigable view: headers always present, items only while their
+  // group is open. `flat` mirrors the on-screen order for key handling.
+  const { view, flat } = useMemo(() => {
+    const flat: CatalogNode[] = []
+    const view = groups.map((group) => {
+      const open = !collapsed.has(group.project)
+      const headerIndex = flat.length
+      flat.push({ kind: 'header', project: group.project })
+      const items = group.items.map((piece, offset) => {
+        const node = { piece, ordinal: group.start + offset + 1, index: -1 }
+        if (open) {
+          node.index = flat.length
+          flat.push({ kind: 'item', piece })
+        }
+        return node
+      })
+      return { ...group, open, headerIndex, items }
+    })
+    return { view, flat }
+  }, [groups, collapsed])
+
+  const toggleGroup = (project: string) => {
+    setCollapsed((current) => {
+      const next = new Set(current)
+      if (next.has(project)) next.delete(project)
+      else next.add(project)
+      return next
+    })
+  }
+
+  const stateRef = useRef({ flat, selected, onSelect, onClose })
+  stateRef.current = { flat, selected, onSelect, onClose }
+
+  // Collapsing a group above the selection can shorten the list.
+  useEffect(() => {
+    setSelected((current) => Math.min(current, flat.length - 1))
+  }, [flat.length])
 
   useEffect(() => {
     listRef.current?.focus({ preventScroll: true })
     const onKeyDown = (e: KeyboardEvent) => {
-      const { ordered, selected, onSelect, onClose } = stateRef.current
+      const { flat, selected, onSelect, onClose } = stateRef.current
       const step = (delta: number) => {
         e.preventDefault()
-        setSelected((current) => (current + delta + ordered.length) % ordered.length)
+        setSelected((current) => (current + delta + flat.length) % flat.length)
       }
       switch (e.key) {
         case 'ArrowDown':
@@ -56,10 +96,13 @@ export function Catalog({ pieces, variant, onSelect, onClose }: CatalogProps) {
         case 'k':
           step(-1)
           break
-        case 'Enter':
+        case 'Enter': {
           e.preventDefault()
-          onSelect(ordered[selected])
+          const node = flat[selected]
+          if (node.kind === 'header') toggleGroup(node.project)
+          else onSelect(node.piece)
           break
+        }
         case 'Escape':
           e.preventDefault()
           onClose()
@@ -71,7 +114,7 @@ export function Catalog({ pieces, variant, onSelect, onClose }: CatalogProps) {
   }, [])
 
   useEffect(() => {
-    document.getElementById(`catalog-item-${selected}`)?.scrollIntoView({ block: 'nearest' })
+    document.getElementById(`catalog-node-${selected}`)?.scrollIntoView({ block: 'nearest' })
   }, [selected])
 
   return (
@@ -84,37 +127,53 @@ export function Catalog({ pieces, variant, onSelect, onClose }: CatalogProps) {
       <div
         ref={listRef}
         className="catalog"
-        role="listbox"
+        role="tree"
         aria-label="Collection index"
-        aria-activedescendant={`catalog-item-${selected}`}
+        aria-activedescendant={`catalog-node-${selected}`}
         tabIndex={-1}
       >
-        {groups.map((group) => (
-          <div key={group.project} role="group" aria-label={group.project} className="catalog-group">
-            <div className="catalog-group-header" aria-hidden="true">
-              <span>{group.project}</span>
+        {view.map((group) => (
+          <div key={group.project} className="catalog-group">
+            <div
+              id={`catalog-node-${group.headerIndex}`}
+              role="treeitem"
+              aria-expanded={group.open}
+              aria-selected={group.headerIndex === selected}
+              className={
+                group.headerIndex === selected
+                  ? 'catalog-group-header is-selected'
+                  : 'catalog-group-header'
+              }
+              onClick={() => toggleGroup(group.project)}
+              onMouseEnter={() => setSelected(group.headerIndex)}
+            >
+              <span className="catalog-caret" aria-hidden="true">
+                {group.open ? '▾' : '▸'}
+              </span>
+              <span className="catalog-group-name">{group.project}</span>
               <span className="catalog-group-artist">{group.artist}</span>
             </div>
-            {group.items.map((piece, offset) => {
-              const i = group.start + offset
-              return (
-                <div
-                  key={piece.tokenId}
-                  id={`catalog-item-${i}`}
-                  role="option"
-                  aria-selected={i === selected}
-                  aria-label={`${piece.projectName} #${piece.editionNumber}`}
-                  className={i === selected ? 'catalog-item is-selected' : 'catalog-item'}
-                  onClick={() => onSelect(piece)}
-                  onMouseEnter={() => setSelected(i)}
-                >
-                  <span className="catalog-item-no">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="catalog-item-name">
-                    <em>#{piece.editionNumber}</em>
-                  </span>
-                </div>
-              )
-            })}
+            {group.open && (
+              <div role="group">
+                {group.items.map(({ piece, ordinal, index }) => (
+                  <div
+                    key={piece.tokenId}
+                    id={`catalog-node-${index}`}
+                    role="treeitem"
+                    aria-selected={index === selected}
+                    aria-label={`${piece.projectName} #${piece.editionNumber}`}
+                    className={index === selected ? 'catalog-item is-selected' : 'catalog-item'}
+                    onClick={() => onSelect(piece)}
+                    onMouseEnter={() => setSelected(index)}
+                  >
+                    <span className="catalog-item-no">{String(ordinal).padStart(2, '0')}</span>
+                    <span className="catalog-item-name">
+                      <em>#{piece.editionNumber}</em>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>

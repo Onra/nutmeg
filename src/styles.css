@@ -593,16 +593,38 @@ body {
 
 .catalog-group-header {
   display: flex;
-  justify-content: space-between;
   align-items: baseline;
-  gap: 1rem;
-  padding: 0.6rem 1.4rem 0.25rem;
+  gap: 0.55rem;
+  padding: 0.6rem 1.4rem 0.4rem 0.9rem;
   font-family: var(--mono);
   font-weight: 400;
   font-size: 0.58rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--parchment-dim);
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.catalog-caret {
+  font-size: 0.5rem;
+  opacity: 0.55;
+  width: 0.7rem;
+  flex: none;
+}
+
+.catalog-group-name {
+  flex: 1;
+}
+
+.catalog-group-header.is-selected {
+  color: var(--parchment);
+  background: rgba(198, 138, 75, 0.09);
+}
+
+.catalog-group-header.is-selected .catalog-caret {
+  color: var(--nutmeg);
+  opacity: 1;
 }
 
 .catalog-group-artist {
