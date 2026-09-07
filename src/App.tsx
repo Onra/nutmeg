@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Field } from './components/Field'
 import { Lantern } from './components/Lantern'
+import { Plaque } from './components/Plaque'
 import { loadCollection } from './data/loader'
 import { useInputMode } from './hooks/useInputMode'
 import { useLantern } from './hooks/useLantern'
@@ -33,6 +34,7 @@ export default function App() {
       {inputMode === 'pointer' && (
         <Lantern glowRef={glowRef} lit={hasInteracted} dimmed={active !== null} />
       )}
+      {active && <Plaque piece={active} onClose={() => setActive(null)} />}
     </main>
   )
 }

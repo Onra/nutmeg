@@ -181,3 +181,192 @@ body {
     opacity: 0.8;
   }
 }
+
+/* ----------------------------------------------------------------- plaque */
+
+.plaque-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4vmin;
+  background: rgba(8, 6, 4, 0.88);
+  backdrop-filter: blur(5px);
+  animation: plaque-in 0.45s ease both;
+}
+
+@keyframes plaque-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.plaque {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  max-width: min(92vw, 640px);
+  max-height: 100%;
+  outline: none;
+  overflow-y: auto;
+}
+
+.plaque-art {
+  margin: 0;
+}
+
+.plaque-art img,
+.plaque-art canvas {
+  display: block;
+  max-width: min(86vw, 540px);
+  max-height: 54vh;
+  width: auto;
+  height: auto;
+  background: var(--bg-deep);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(198, 138, 75, 0.12);
+}
+
+.plaque-panel {
+  background: var(--panel);
+  border: 1px solid rgba(198, 138, 75, 0.18);
+  padding: 1.3rem 1.8rem 1.5rem;
+  min-width: min(84vw, 380px);
+  text-align: center;
+}
+
+.plaque-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.6rem;
+  letter-spacing: 0.01em;
+  color: var(--parchment);
+}
+
+.plaque-edition {
+  opacity: 0.65;
+}
+
+.plaque-meta {
+  margin: 0.5rem 0 0;
+  font-family: var(--mono);
+  font-weight: 300;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--parchment-dim);
+}
+
+.plaque-rarity {
+  margin: 0.95rem 0 0;
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 0.66rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.rarity--legendary {
+  color: var(--nutmeg-bright);
+}
+
+.rarity--rare {
+  color: var(--nutmeg);
+}
+
+.rarity--common {
+  color: var(--parchment-dim);
+}
+
+.plaque-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.6rem 1.2rem;
+  margin: 1.15rem 0 0;
+  padding-top: 1.05rem;
+  border-top: 1px solid rgba(198, 138, 75, 0.12);
+}
+
+.plaque-features div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.plaque-features dt {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--parchment-dim);
+}
+
+.plaque-features dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-weight: 300;
+  font-size: 0.72rem;
+  color: var(--parchment);
+}
+
+.plaque-link {
+  display: inline-block;
+  margin-top: 1.2rem;
+  font-family: var(--mono);
+  font-weight: 300;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: var(--parchment-dim);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(160, 142, 115, 0.35);
+  padding-bottom: 1px;
+  transition: color 0.3s ease;
+}
+
+.plaque-link:hover,
+.plaque-link:focus-visible {
+  color: var(--parchment);
+  outline: none;
+}
+
+.plaque-close {
+  position: fixed;
+  top: 1.1rem;
+  right: 1.3rem;
+  padding: 0.4rem 0.7rem;
+  border: 0;
+  background: none;
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--parchment-dim);
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.plaque-close:hover,
+.plaque-close:focus-visible {
+  opacity: 1;
+  outline: none;
+}
+
+.plaque-close:focus-visible {
+  color: var(--nutmeg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plaque-backdrop {
+    animation: none;
+  }
+}
