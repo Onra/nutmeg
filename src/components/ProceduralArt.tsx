@@ -35,7 +35,7 @@ function draw(canvas: HTMLCanvasElement, piece: Piece, size: number) {
   ctx.scale(dpr, dpr)
 
   const rand = seededRandom(piece.tokenId + ':art')
-  const palette = PALETTES[piece.rarity]
+  const palette = PALETTES[piece.rarity ?? 'common']
   const pick = () => palette.tones[Math.floor(rand() * palette.tones.length)]
 
   ctx.fillStyle = palette.ground

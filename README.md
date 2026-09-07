@@ -22,25 +22,21 @@ npm run build    # type-check + production build
 ## Data
 
 The collection lives in `src/data/collection.json` — one object per piece,
-hand-curated (there is no API key, so no live on-chain fetching). All pieces
-are real Art Blocks tokens and their `imageUrl`s were verified against
-`media.artblocks.io`; the site loads the `thumb/` variant first and swaps in
-`hd/` once cached.
+exported/curated by hand (there is no API key, so no live on-chain
+fetching). Both `media.artblocks.io/{tokenId}.png` URLs (where `thumb/` and
+`hd/` variants load progressively) and `media-proxy.artblocks.io/...` URLs
+are supported.
 
-Two fields deserve a note:
+One field deserves a note: **`rarity`** (`legendary` / `rare` / `common`)
+is *not* Art Blocks metadata — it is an optional curatorial assignment.
+Pieces that carry it get the size/intensity point encoding and a rarity
+mention on the plaque; pieces without it render at the quietest tier and
+the plaque omits the mention (the console lists unranked tokens as a
+reminder).
 
-- **`rarity`** (`legendary` / `rare` / `common`) is *not* Art Blocks
-  metadata. It is a curatorial assignment stored explicitly so the
-  point-encoding logic has something to read — guided by edition size and
-  project stature, tuned by hand.
-- **`features`** are hand-curated approximations of each token's traits
-  (plausible per project, not fetched from the token API). Replace them with
-  real values whenever the data is regenerated.
-
-One entry (*Fragments of an Infinite Field #512*) deliberately has no
-`imageUrl`, so the seeded procedural fallback (geometric shapes under a
-central glow, tinted by rarity) stays a living code path — the gallery never
-breaks on incomplete data.
+Incomplete data never breaks the gallery: an entry with no `imageUrl` (or a
+broken one) falls back to seeded procedural stand-in art — geometric shapes
+under a central glow.
 
 ### Populating automatically later
 

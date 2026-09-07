@@ -248,6 +248,9 @@ body {
    fixed frame lit by a faint spotlight, into which the piece fades. */
 .plaque-stage {
   display: grid;
+  /* A definite 100% track keeps the artwork's max-height meaningful —
+     against an auto-sized row it would resolve to none and overflow. */
+  grid-template: 100% / 100%;
   place-items: center;
   width: min(86vw, 540px);
   height: min(54vh, 540px);

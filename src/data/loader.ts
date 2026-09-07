@@ -14,7 +14,16 @@ export async function loadCollection(): Promise<Piece[]> {
   // The JSON import infers a union of literal feature keys per entry, which
   // is not directly comparable to Record<string, string> — widen through
   // unknown; the shape is guaranteed by hand-curation (or the fetch script).
-  return raw as unknown as Piece[]
+  const pieces = raw as unknown as Piece[]
+  const unranked = pieces.filter((p) => !p.rarity)
+  if (unranked.length > 0) {
+    console.info(
+      `nutmeg: ${unranked.length} piece(s) have no "rarity" field and render at the quietest tier — ` +
+        `assign legendary/rare/common in collection.json to restore the size/intensity encoding ` +
+        `(${unranked.map((p) => p.tokenId).join(', ')})`,
+    )
+  }
+  return pieces
 }
 
 /**

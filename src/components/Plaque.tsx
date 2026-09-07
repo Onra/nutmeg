@@ -75,7 +75,9 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
           <p className="plaque-meta">
             No. {piece.tokenId} — {piece.artist}, {year}
           </p>
-          <p className={`plaque-rarity rarity--${piece.rarity}`}>{piece.rarity}</p>
+          {piece.rarity && (
+            <p className={`plaque-rarity rarity--${piece.rarity}`}>{piece.rarity}</p>
+          )}
           {featureEntries.length > 0 && (
             <dl className="plaque-features">
               {featureEntries.map(([name, value]) => (

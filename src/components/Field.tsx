@@ -57,10 +57,14 @@ function Point({ piece, position, refCallback, onOpen }: PointProps) {
     <button
       ref={refCallback}
       type="button"
-      className={`point point--${piece.rarity}`}
+      className={`point point--${piece.rarity ?? 'common'}`}
       style={style}
       onClick={() => onOpen(piece)}
-      aria-label={`${piece.projectName} #${piece.editionNumber} — ${piece.rarity}`}
+      aria-label={
+        piece.rarity
+          ? `${piece.projectName} #${piece.editionNumber} — ${piece.rarity}`
+          : `${piece.projectName} #${piece.editionNumber}`
+      }
       aria-haspopup="dialog"
     >
       <span className="point-core" aria-hidden="true" />
