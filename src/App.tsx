@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Field } from './components/Field'
 import { Lantern } from './components/Lantern'
 import { Plaque } from './components/Plaque'
+import { Wordmark } from './components/Wordmark'
 import { loadCollection } from './data/loader'
 import { useInputMode } from './hooks/useInputMode'
 import { useLantern } from './hooks/useLantern'
@@ -13,6 +14,7 @@ export default function App() {
   const [pieces, setPieces] = useState<Piece[]>([])
   const [active, setActive] = useState<Piece | null>(null)
   const [hasInteracted, setHasInteracted] = useState(false)
+  const [wordmarkVisible, setWordmarkVisible] = useState(false)
   const reducedMotion = usePrefersReducedMotion()
   const inputMode = useInputMode()
   const positions = useSeededPositions(pieces)
@@ -20,6 +22,14 @@ export default function App() {
   useEffect(() => {
     loadCollection().then(setPieces)
   }, [])
+
+  // The wordmark is never shown on load — only a few beats after the
+  // visitor starts exploring.
+  useEffect(() => {
+    if (!hasInteracted) return
+    const timer = window.setTimeout(() => setWordmarkVisible(true), 3200)
+    return () => window.clearTimeout(timer)
+  }, [hasInteracted])
 
   const onFirstMove = useCallback(() => setHasInteracted(true), [])
   const { glowRef, registerPoint } = useLantern({
@@ -34,7 +44,9 @@ export default function App() {
       {inputMode === 'pointer' && (
         <Lantern glowRef={glowRef} lit={hasInteracted} dimmed={active !== null} />
       )}
+      <Wordmark visible={wordmarkVisible} />
       {active && <Plaque piece={active} onClose={() => setActive(null)} />}
+      <div className="grain" aria-hidden="true" />
     </main>
   )
 }
