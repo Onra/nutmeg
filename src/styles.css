@@ -431,3 +431,69 @@ body {
     animation: none;
   }
 }
+
+/* ------------------------------------------------------------- touch mode */
+
+/* Without a lantern, points rest a little brighter so they stay findable. */
+.mode-touch .point {
+  --near: 0.3;
+}
+
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(60% 50% at 50% 42%, rgba(198, 138, 75, 0.075), rgba(0, 0, 0, 0) 70%);
+  animation: ambient-drift 38s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-drift {
+  from {
+    transform: translate(-3%, -2%) scale(1);
+  }
+  to {
+    transform: translate(3%, 2%) scale(1.12);
+  }
+}
+
+.tap-bloom {
+  position: fixed;
+  z-index: 60;
+  width: 24rem;
+  height: 24rem;
+  margin: -12rem 0 0 -12rem;
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(224, 168, 96, 0.2) 0%,
+    rgba(198, 138, 75, 0.12) 30%,
+    rgba(0, 0, 0, 0) 68%
+  );
+  animation: bloom 1.15s ease-out both;
+}
+
+@keyframes bloom {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient {
+    animation: none;
+  }
+  .tap-bloom {
+    display: none;
+  }
+}
