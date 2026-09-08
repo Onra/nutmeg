@@ -4,6 +4,7 @@ import { Catalog } from './components/Catalog'
 import { Field } from './components/Field'
 import { Lantern } from './components/Lantern'
 import { Plaque } from './components/Plaque'
+import { Starfield } from './components/Starfield'
 import { TapBlooms } from './components/TapBlooms'
 import { Wordmark } from './components/Wordmark'
 import { loadCollection } from './data/loader'
@@ -63,6 +64,7 @@ export default function App() {
 
   return (
     <main className={`room mode-${inputMode}`} aria-label="nutmeg — a small gallery in the dark">
+      <Starfield />
       <Field pieces={pieces} positions={positions} registerPoint={registerPoint} onOpen={setActive} />
       {inputMode === 'pointer' && (
         <Lantern glowRef={glowRef} lit={hasInteracted} dimmed={active !== null} />
