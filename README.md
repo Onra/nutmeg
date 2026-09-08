@@ -62,6 +62,11 @@ bottom sheet instead, opened from a slim handle at the bottom edge.
 While a piece is raised on its pedestal, `o` quietly opens it on Art
 Blocks in a new tab — a shortcut the interface itself never advertises.
 
+Clicking the artwork expands it fullscreen (Escape or another click steps
+back to the plaque). The one exception is a sounding piece: its clicks
+belong to the generator, per the play hint. On touch devices there is no
+close icon — sliding the artwork toward the bottom closes the piece.
+
 ## Accessibility
 
 - Points are real buttons: Tab reaches them, Enter opens the plaque, Escape

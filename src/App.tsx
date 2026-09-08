@@ -94,7 +94,9 @@ export default function App() {
           onClose={() => setCatalogOpen(false)}
         />
       )}
-      {active && <Plaque piece={active} onClose={() => setActive(null)} />}
+      {active && (
+        <Plaque key={active.tokenId} piece={active} onClose={() => setActive(null)} />
+      )}
       <div className="grain" aria-hidden="true" />
     </main>
   )
