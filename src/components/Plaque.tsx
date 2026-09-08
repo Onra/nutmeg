@@ -39,22 +39,32 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
     flipFromRef.current = null
     const art = artEl()
     if (!first || !art) return
+    // A live generator re-renders itself at the new size — scaling its
+    // whole page would warp the dark frame around the piece, so it
+    // crossfades between sizes instead of gliding.
+    if (art.tagName === 'IFRAME') {
+      art.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, easing: 'ease' })
+      return
+    }
     const last = art.getBoundingClientRect()
     if (last.width === 0 || last.height === 0) return
     const dx = first.left + first.width / 2 - (last.left + last.width / 2)
     const dy = first.top + first.height / 2 - (last.top + last.height / 2)
+    // Only the artwork glides; its plinth shadow fades rather than scales
+    // (out quickly on the way up, back just before landing on the way down).
+    const shadowTiming = expanded ? 'box-shadow 0.2s ease' : 'box-shadow 0.25s ease 0.4s'
     art.style.willChange = 'transform'
     art.style.transition = 'none'
     art.style.transform = `translate(${dx}px, ${dy}px) scale(${first.width / last.width}, ${first.height / last.height})`
     // Force a style flush so the inverse transform is the transition's
     // start state, then release it in the same tick.
     void art.getBoundingClientRect()
-    art.style.transition = 'transform 0.5s cubic-bezier(0.22, 0.7, 0.3, 1)'
+    art.style.transition = `transform 0.5s cubic-bezier(0.22, 0.7, 0.3, 1), ${shadowTiming}`
     art.style.transform = ''
     const timer = window.setTimeout(() => {
       art.style.transition = ''
       art.style.willChange = ''
-    }, 550)
+    }, 700)
     return () => window.clearTimeout(timer)
   }, [expanded])
 

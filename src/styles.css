@@ -328,6 +328,9 @@ body {
   inset: 0;
   margin: auto;
   z-index: 55;
+  /* Fullscreen shows the piece alone — no plinth shadow ring, so the
+     dark frame never travels with the artwork. */
+  box-shadow: none;
 }
 
 .is-expanded .plaque-stage img {
