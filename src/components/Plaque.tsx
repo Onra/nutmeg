@@ -27,9 +27,39 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
   const artEl = () =>
     stageRef.current?.querySelector<HTMLElement>('img, canvas, iframe') ?? null
 
-  // Both directions animate: capture where the artwork is, let the layout
-  // jump, then in the layout effect below play it from there to its new home.
-  const setExpandedAnimated = (next: boolean) => {
+  // Live pieces don't glide — the room fades to black, the generator is
+  // remounted (restarting from its first frame) at the new size, and the
+  // black lifts again.
+  const [veil, setVeil] = useState(false)
+  const [liveEpoch, setLiveEpoch] = useState(0)
+  const veilTimers = useRef<number[]>([])
+  useEffect(() => {
+    const timers = veilTimers.current
+    return () => timers.forEach((t) => window.clearTimeout(t))
+  }, [])
+
+  // Both directions animate: static artwork FLIPs from where it was to its
+  // new home (see the layout effect below); live artwork goes through the
+  // veil. Reduced motion swaps instantly either way.
+  const requestExpand = (next: boolean) => {
+    if (live) {
+      if (reducedMotion) {
+        setLiveReady(false)
+        setLiveEpoch((epoch) => epoch + 1)
+        setExpanded(next)
+        return
+      }
+      setVeil(true)
+      veilTimers.current.push(
+        window.setTimeout(() => {
+          setLiveReady(false)
+          setLiveEpoch((epoch) => epoch + 1)
+          setExpanded(next)
+          veilTimers.current.push(window.setTimeout(() => setVeil(false), 200))
+        }, 340),
+      )
+      return
+    }
     if (!reducedMotion) flipFromRef.current = artEl()?.getBoundingClientRect() ?? null
     setExpanded(next)
   }
@@ -39,13 +69,6 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
     flipFromRef.current = null
     const art = artEl()
     if (!first || !art) return
-    // A live generator re-renders itself at the new size — scaling its
-    // whole page would warp the dark frame around the piece, so it
-    // crossfades between sizes instead of gliding.
-    if (art.tagName === 'IFRAME') {
-      art.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, easing: 'ease' })
-      return
-    }
     const last = art.getBoundingClientRect()
     if (last.width === 0 || last.height === 0) return
     const dx = first.left + first.width / 2 - (last.left + last.width / 2)
@@ -70,7 +93,7 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
 
   // Escape steps back: out of fullscreen first, then out of the plaque.
   useFocusTrap(dialogRef, () => {
-    if (expandedRef.current) setExpandedAnimated(false)
+    if (expandedRef.current) requestExpand(false)
     else onClose()
   })
 
@@ -125,6 +148,10 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
         : dialog
     const onDown = (e: PointerEvent) => {
       if (e.pointerType !== 'touch') return
+      // Links and buttons keep their taps; everything else on the plaque
+      // is grabbable — so sounding pieces (whose iframe owns its touches)
+      // can still be slid closed from the rest of the plaque.
+      if ((e.target as HTMLElement).closest('a, button')) return
       tracking = true
       pointerId = e.pointerId
       startY = e.clientY
@@ -151,12 +178,12 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
         el.style.transition = ''
       }, 300)
     }
-    stage.addEventListener('pointerdown', onDown)
+    dialog.addEventListener('pointerdown', onDown)
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerup', onEnd)
     window.addEventListener('pointercancel', onEnd)
     return () => {
-      stage.removeEventListener('pointerdown', onDown)
+      dialog.removeEventListener('pointerdown', onDown)
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerup', onEnd)
       window.removeEventListener('pointercancel', onEnd)
@@ -170,7 +197,7 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
     }
     // Sounding pieces never expand — their clicks start the music.
     if (piece.audio) return
-    setExpandedAnimated(!expandedRef.current)
+    requestExpand(!expandedRef.current)
   }
 
   const year = piece.mintDate.slice(0, 4)
@@ -183,7 +210,7 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
         if (e.target !== e.currentTarget) return
         // While fullscreen, a click beside the artwork steps back to the
         // plaque rather than closing the room's door entirely.
-        if (expandedRef.current) setExpandedAnimated(false)
+        if (expandedRef.current) requestExpand(false)
         else onClose()
       }}
     >
@@ -202,6 +229,7 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
             {live ? (
               <>
                 <iframe
+                  key={liveEpoch}
                   className={liveReady ? 'is-loaded' : undefined}
                   src={piece.generatorUrl}
                   title={`${piece.projectName} #${piece.editionNumber} — live generative view`}
@@ -260,6 +288,7 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
           ×
         </button>
       </div>
+      <div className={veil ? 'plaque-veil is-on' : 'plaque-veil'} aria-hidden="true" />
     </div>
   )
 }

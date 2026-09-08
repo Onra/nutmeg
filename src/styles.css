@@ -361,6 +361,23 @@ body {
   z-index: 55;
 }
 
+/* Live pieces change size behind a brief blackout while their generator
+   restarts, instead of gliding. */
+.plaque-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 58;
+  background: rgb(8, 6, 4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.34s ease;
+}
+
+.plaque-veil.is-on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* Panel timing follows the artwork: it clears out before the piece glides
    over its place, and returns only once the piece has settled home. */
 .plaque-panel,
