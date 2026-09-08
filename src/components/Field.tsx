@@ -40,17 +40,30 @@ interface PointProps {
 
 function Point({ piece, position, refCallback, onOpen }: PointProps) {
   // Desynchronized breathing: duration and phase are seeded per token.
-  const breathing = useMemo(() => {
-    const rand = seededRandom(piece.tokenId + ':breathe')
+  const star = useMemo(() => {
+    const rand = seededRandom(piece.tokenId + ':star')
     const duration = 5 + rand() * 4
-    return { duration, delay: -rand() * duration }
+    return {
+      duration,
+      delay: -rand() * duration,
+      // Apparent magnitude — a little variance either side of the rarity
+      // tier, so a dozen points read as a sky rather than three stamps.
+      magnitude: 0.86 + rand() * 0.3,
+      // The diffraction spikes get their own tilt and a quicker shimmer than
+      // the core, which is how scintillation actually looks.
+      tilt: rand() * 90,
+      glintDuration: 2.2 + rand() * 2.6,
+    }
   }, [piece.tokenId])
 
   const style = {
     left: `${position.fx * 100}%`,
     top: `${position.fy * 100}%`,
-    '--breathe-dur': `${breathing.duration.toFixed(2)}s`,
-    '--breathe-delay': `${breathing.delay.toFixed(2)}s`,
+    '--breathe-dur': `${star.duration.toFixed(2)}s`,
+    '--breathe-delay': `${star.delay.toFixed(2)}s`,
+    '--mag': star.magnitude.toFixed(3),
+    '--glint-tilt': `${star.tilt.toFixed(1)}deg`,
+    '--glint-dur': `${star.glintDuration.toFixed(2)}s`,
   } as CSSProperties
 
   return (

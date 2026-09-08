@@ -121,41 +121,105 @@ body {
   --rest: 0.34;
   --size: 11px;
   --halo: 34px;
+  --spike: 52px;
   --tone: var(--nutmeg-bright);
+  --glint-tone: var(--parchment);
 }
 
 .point--rare {
   --rest: 0.26;
   --size: 8px;
   --halo: 26px;
+  --spike: 38px;
   --tone: var(--nutmeg);
+  --glint-tone: var(--nutmeg-bright);
 }
 
 .point--common {
   --rest: 0.17;
   --size: 6px;
   --halo: 19px;
+  --spike: 32px;
   --tone: var(--nutmeg-dim);
+  /* A dim core would give an invisible 1px spike, so the glint always sits a
+     step brighter than the tier it belongs to. */
+  --glint-tone: var(--nutmeg);
 }
 
 .point-core {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: var(--size);
-  height: var(--size);
-  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+  /* --mag is the seeded apparent magnitude, scattering each star a little
+     either side of its rarity tier. */
+  --core: calc(var(--size) * var(--mag, 1));
+  --bloom: calc(var(--halo) * var(--mag, 1));
+  --ray: calc(var(--spike) * var(--mag, 1));
+  width: var(--core);
+  height: var(--core);
+  margin: calc(var(--core) / -2) 0 0 calc(var(--core) / -2);
   border-radius: 50%;
-  background: var(--tone);
-  box-shadow: 0 0 var(--halo) calc(var(--size) / 2.5)
-    color-mix(in srgb, var(--tone) 55%, transparent);
+  /* Warm white at the centre falling fast to the rarity tone and then to
+     nothing: a star is a light source, and a disc with an edge reads as a
+     sphere instead. */
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in srgb, var(--tone) 12%, var(--parchment)) 0%,
+    var(--tone) 30%,
+    color-mix(in srgb, var(--tone) 45%, transparent) 58%,
+    transparent 100%
+  );
+  box-shadow: 0 0 var(--bloom) calc(var(--core) / 2.5)
+    color-mix(in srgb, var(--tone) 45%, transparent);
+  /* Rotating the group tilts only the spikes — the core is radial. */
+  transform: rotate(var(--glint-tilt, 0deg));
   animation: breathe var(--breathe-dur, 7s) ease-in-out var(--breathe-delay, 0s) infinite;
+}
+
+/* The four-point glint. This is what separates a star from a dot, and it
+   shimmers on its own clock so core and spikes never beat together. */
+.point-core::before,
+.point-core::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  --spike-fade: transparent 0%, color-mix(in srgb, var(--glint-tone) 20%, transparent) 32%,
+    var(--glint-tone) 50%, color-mix(in srgb, var(--glint-tone) 20%, transparent) 68%,
+    transparent 100%;
+  animation: glint var(--glint-dur, 3s) ease-in-out var(--breathe-delay, 0s) infinite;
+}
+
+/* Tails long and faint, a bright pinch at the middle — a flat ramp to the
+   centre reads as two crossed lines rather than a glint. */
+.point-core::before {
+  width: var(--ray);
+  height: 1px;
+  margin: -0.5px 0 0 calc(var(--ray) / -2);
+  background: linear-gradient(to right, var(--spike-fade));
+}
+
+.point-core::after {
+  width: 1px;
+  height: calc(var(--ray) * 0.68);
+  margin: calc(var(--ray) * -0.34) 0 0 -0.5px;
+  background: linear-gradient(to bottom, var(--spike-fade));
 }
 
 @keyframes breathe {
   0%,
   100% {
     opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes glint {
+  0%,
+  100% {
+    opacity: 0.5;
   }
   50% {
     opacity: 1;
@@ -179,6 +243,49 @@ body {
   .point-core {
     animation: none;
     opacity: 0.8;
+  }
+  .point-core::before,
+  .point-core::after {
+    animation: none;
+    opacity: 0.7;
+  }
+}
+
+/* --------------------------------------------------------------- stardust */
+
+/* The far field. Too faint and too small to compete with the collection, and
+   deliberately inert: the lantern brightens only real pieces, so responding
+   to it stays the signal that a point can be opened. */
+.stardust {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.speck {
+  position: absolute;
+  width: var(--speck-size);
+  height: var(--speck-size);
+  margin: calc(var(--speck-size) / -2) 0 0 calc(var(--speck-size) / -2);
+  border-radius: 50%;
+  background: var(--parchment-dim);
+  opacity: var(--speck-opacity);
+  animation: twinkle var(--twinkle-dur, 8s) ease-in-out var(--twinkle-delay, 0s) infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: calc(var(--speck-opacity) * 0.3);
+  }
+  50% {
+    opacity: var(--speck-opacity);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .speck {
+    animation: none;
   }
 }
 

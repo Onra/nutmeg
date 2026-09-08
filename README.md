@@ -4,12 +4,22 @@ A personal Art Blocks gallery designed like a small museum room after hours.
 
 The page loads black, with no title and no navigation — that is intentional.
 On desktop, a warm lantern glow follows the cursor and faintly reveals about
-a dozen breathing points scattered through the dark; each one is a piece in
-the collection. Point size and intensity quietly encode rarity. Clicking a
+a dozen breathing stars scattered through the dark; each one is a piece in
+the collection. Each is drawn as a star rather than a dot — a warm-white core
+inside its bloom, four tapered diffraction spikes on a seeded tilt, and a
+shimmer that runs on its own clock so the field never pulses in unison. Star
+size and intensity quietly encode rarity, with a seeded magnitude scattering
+each one a little either side of its tier. Clicking a
 point raises the piece on a pedestal with a museum plaque (title, catalog
 number, rarity, traits). Escape or a click outside returns you to the dark.
 On touch devices the lantern is replaced by a soft fixed ambient glow,
 slightly brighter points, and a small bloom of light at each tap.
+
+Behind the collection sits a far field of stardust (`src/components/Starfield.tsx`):
+a couple of hundred seeded specks drawn by rejection sampling against a tilted
+band with a brighter core, so the dark reads as a galaxy rather than a scatter.
+It is deliberately inert — it never responds to the lantern, so brightening
+under the light stays the signal that a point is a real piece you can open.
 
 ## Running
 
@@ -72,5 +82,6 @@ close icon — sliding the artwork toward the bottom closes the piece.
 - Points are real buttons: Tab reaches them, Enter opens the plaque, Escape
   closes it, and focus returns to the point you came from.
 - Plaque text sits on its own panel at ≥ 4.5:1 contrast.
-- `prefers-reduced-motion` disables point breathing, the lantern lerp trail,
-  the grain flicker, ambient drift, and tap blooms.
+- `prefers-reduced-motion` disables point breathing, the spike shimmer, the
+  stardust twinkle, the lantern lerp trail, the grain flicker, ambient drift,
+  and tap blooms.
