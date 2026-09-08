@@ -131,42 +131,59 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [piece.externalUrl])
 
-  // Touch: dragging the artwork downward slides the plaque with the finger
-  // and closes it past a small threshold (in fullscreen, the stage itself
-  // slides — a transform on the dialog would re-anchor the fixed stage).
+  // Touch: dragging downward anywhere on the plaque slides it with the
+  // finger and closes past a small threshold. Uses raw touch events with a
+  // claim step: a mostly-vertical downward pull while the backdrop sits at
+  // its scroll top claims the gesture (preventDefault stops the scroll);
+  // anything else is left to native scrolling — pointer events were no
+  // good here, since a scroll fires pointercancel and killed the drag on
+  // tall plaques (exactly the audio piece's). In fullscreen the artwork
+  // itself slides — a transform on the dialog would re-anchor it.
   useEffect(() => {
     const stage = stageRef.current
     const dialog = dialogRef.current
-    if (!stage || !dialog) return
+    const backdrop = dialog?.parentElement
+    if (!stage || !dialog || !backdrop) return
+    let startX = 0
     let startY = 0
     let dy = 0
-    let pointerId = -1
-    let tracking = false
+    let active = false
+    let claimed = false
     const target = () =>
       expandedRef.current
         ? (stage.querySelector<HTMLElement>('img, canvas, iframe') ?? stage)
         : dialog
-    const onDown = (e: PointerEvent) => {
-      if (e.pointerType !== 'touch') return
-      // Links and buttons keep their taps; everything else on the plaque
-      // is grabbable — so sounding pieces (whose iframe owns its touches)
-      // can still be slid closed from the rest of the plaque.
+    const onStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return
+      // Links and buttons keep their taps.
       if ((e.target as HTMLElement).closest('a, button')) return
-      tracking = true
-      pointerId = e.pointerId
-      startY = e.clientY
+      active = true
+      claimed = false
+      startX = e.touches[0].clientX
+      startY = e.touches[0].clientY
       dy = 0
       draggedRef.current = false
     }
-    const onMove = (e: PointerEvent) => {
-      if (!tracking || e.pointerId !== pointerId) return
-      dy = Math.max(0, e.clientY - startY)
+    const onMove = (e: TouchEvent) => {
+      if (!active) return
+      const touch = e.touches[0]
+      const dxAbs = Math.abs(touch.clientX - startX)
+      dy = touch.clientY - startY
+      if (!claimed) {
+        if (dy > 6 && dy > dxAbs && backdrop.scrollTop <= 0) claimed = true
+        else if (dy < -6 || dxAbs > 12) {
+          active = false
+          return
+        } else return
+      }
+      e.preventDefault()
       if (dy > 8) draggedRef.current = true
       target().style.transform = dy > 0 ? `translateY(${dy}px)` : ''
     }
-    const onEnd = (e: PointerEvent) => {
-      if (!tracking || e.pointerId !== pointerId) return
-      tracking = false
+    const onEnd = () => {
+      if (!active) return
+      active = false
+      if (!claimed) return
       if (dy > 90) {
         closeRef.current()
         return
@@ -178,15 +195,15 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
         el.style.transition = ''
       }, 300)
     }
-    dialog.addEventListener('pointerdown', onDown)
-    window.addEventListener('pointermove', onMove)
-    window.addEventListener('pointerup', onEnd)
-    window.addEventListener('pointercancel', onEnd)
+    dialog.addEventListener('touchstart', onStart, { passive: true })
+    dialog.addEventListener('touchmove', onMove, { passive: false })
+    dialog.addEventListener('touchend', onEnd)
+    dialog.addEventListener('touchcancel', onEnd)
     return () => {
-      dialog.removeEventListener('pointerdown', onDown)
-      window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerup', onEnd)
-      window.removeEventListener('pointercancel', onEnd)
+      dialog.removeEventListener('touchstart', onStart)
+      dialog.removeEventListener('touchmove', onMove)
+      dialog.removeEventListener('touchend', onEnd)
+      dialog.removeEventListener('touchcancel', onEnd)
     }
   }, [])
 
@@ -231,6 +248,7 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
                 <iframe
                   key={liveEpoch}
                   className={liveReady ? 'is-loaded' : undefined}
+                  allow="autoplay"
                   src={piece.generatorUrl}
                   title={`${piece.projectName} #${piece.editionNumber} — live generative view`}
                   onLoad={() => setLiveReady(true)}
