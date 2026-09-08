@@ -234,9 +234,21 @@ body {
   outline: none;
 }
 
+/* Opacity-only entrance: a transform here would make the figure the
+   containing block of the fullscreen stage, and toggling the animation
+   off/on around fullscreen restarts it (visible flicker on collapse). */
 .plaque-art {
   margin: 0;
-  animation: rise-in 0.7s cubic-bezier(0.22, 0.7, 0.3, 1) 0.1s both;
+  animation: fade-in 0.8s ease 0.1s both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .plaque-panel,
@@ -299,13 +311,6 @@ body {
 .plaque-backdrop.is-expanded {
   overflow: hidden;
   background: rgb(8, 6, 4);
-}
-
-/* The figure's entrance animation must not leave a transform on an
-   ancestor of the fixed stage — a transformed ancestor would become its
-   containing block and re-anchor the fullscreen layout. */
-.is-expanded .plaque-art {
-  animation: none;
 }
 
 /* Explicit viewport dimensions: with height auto the grid track would be
