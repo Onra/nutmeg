@@ -43,6 +43,7 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
     if (last.width === 0 || last.height === 0) return
     const dx = first.left + first.width / 2 - (last.left + last.width / 2)
     const dy = first.top + first.height / 2 - (last.top + last.height / 2)
+    art.style.willChange = 'transform'
     art.style.transition = 'none'
     art.style.transform = `translate(${dx}px, ${dy}px) scale(${first.width / last.width}, ${first.height / last.height})`
     // Force a style flush so the inverse transform is the transition's
@@ -52,6 +53,7 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
     art.style.transform = ''
     const timer = window.setTimeout(() => {
       art.style.transition = ''
+      art.style.willChange = ''
     }, 550)
     return () => window.clearTimeout(timer)
   }, [expanded])
@@ -107,7 +109,10 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
     let dy = 0
     let pointerId = -1
     let tracking = false
-    const target = () => (expandedRef.current ? stage : dialog)
+    const target = () =>
+      expandedRef.current
+        ? (stage.querySelector<HTMLElement>('img, canvas, iframe') ?? stage)
+        : dialog
     const onDown = (e: PointerEvent) => {
       if (e.pointerType !== 'touch') return
       tracking = true
@@ -165,7 +170,11 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
     <div
       className={expanded ? 'plaque-backdrop is-expanded' : 'plaque-backdrop'}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose()
+        if (e.target !== e.currentTarget) return
+        // While fullscreen, a click beside the artwork steps back to the
+        // plaque rather than closing the room's door entirely.
+        if (expandedRef.current) setExpandedAnimated(false)
+        else onClose()
       }}
     >
       <div

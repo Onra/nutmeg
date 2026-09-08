@@ -239,7 +239,9 @@ body {
    off/on around fullscreen restarts it (visible flicker on collapse). */
 .plaque-art {
   margin: 0;
-  animation: fade-in 0.8s ease 0.1s both;
+  /* fill backwards, not both: a finished fill-forwards animation keeps
+     overriding declarations, which would block the fullscreen fades. */
+  animation: fade-in 0.8s ease 0.1s backwards;
 }
 
 @keyframes fade-in {
@@ -253,7 +255,7 @@ body {
 
 .plaque-panel,
 .plaque-close {
-  animation: rise-in 0.7s cubic-bezier(0.22, 0.7, 0.3, 1) 0.28s both;
+  animation: rise-in 0.7s cubic-bezier(0.22, 0.7, 0.3, 1) 0.28s backwards;
 }
 
 /* The stage reserves the artwork's footprint before anything loads: a
@@ -313,40 +315,54 @@ body {
   background: rgb(8, 6, 4);
 }
 
-/* Explicit viewport dimensions: with height auto the grid track would be
-   indefinite and the artwork's percentage max-height would collapse. */
+/* Fullscreen lifts only the artwork out of the plaque: the layout beneath
+   never changes, so nothing jumps or reflows while the FLIP plays. */
 .is-expanded .plaque-stage {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 55;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
   background: none;
 }
 
-/* Percentages against the viewport-tracking stage: fully visible, no
-   scroll, centered by the stage's own grid. */
 .is-expanded .plaque-stage img,
+.is-expanded .plaque-stage canvas,
 .is-expanded .plaque-stage iframe {
-  max-width: 100%;
-  max-height: 100%;
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  z-index: 55;
+}
+
+.is-expanded .plaque-stage img {
+  max-width: 100vw;
+  max-height: 100vh;
+  max-height: 100dvh;
 }
 
 .is-expanded .plaque-stage iframe {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
 }
 
 /* The procedural canvas sizes itself inline, so the override needs weight. */
 .is-expanded .plaque-stage canvas {
   width: min(100vw, 100vh) !important;
   height: min(100vw, 100vh) !important;
+  max-width: none;
+  max-height: none;
 }
 
-.plaque-panel {
-  transition: opacity 0.35s ease;
+.is-expanded .plaque-stage-catcher {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+}
+
+/* Panel timing follows the artwork: it clears out before the piece glides
+   over its place, and returns only once the piece has settled home. */
+.plaque-panel,
+.plaque-audio-hint {
+  transition: opacity 0.3s ease 0.32s;
 }
 
 .is-expanded .plaque-panel,
@@ -354,13 +370,14 @@ body {
   opacity: 0;
   visibility: hidden;
   transition:
-    opacity 0.35s ease,
-    visibility 0s 0.35s;
+    opacity 0.18s ease,
+    visibility 0s 0.18s;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .plaque-backdrop,
   .plaque-panel,
+  .plaque-audio-hint,
   .is-expanded .plaque-panel,
   .is-expanded .plaque-audio-hint {
     transition: none;
