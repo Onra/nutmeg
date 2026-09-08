@@ -289,29 +289,49 @@ body {
 
 /* ----------------------------------------------------- fullscreen artwork */
 
+/* The backdrop persists across the toggle, so its deepening (and the
+   panel's fade) transitions smoothly in both directions; the artwork
+   itself is FLIP-animated from the component. */
+.plaque-backdrop {
+  transition: background-color 0.5s ease;
+}
+
 .plaque-backdrop.is-expanded {
   overflow: hidden;
+  background: rgb(8, 6, 4);
 }
 
+/* The figure's entrance animation must not leave a transform on an
+   ancestor of the fixed stage — a transformed ancestor would become its
+   containing block and re-anchor the fullscreen layout. */
+.is-expanded .plaque-art {
+  animation: none;
+}
+
+/* Explicit viewport dimensions: with height auto the grid track would be
+   indefinite and the artwork's percentage max-height would collapse. */
 .is-expanded .plaque-stage {
   position: fixed;
-  inset: 0;
+  left: 0;
+  top: 0;
   z-index: 55;
-  width: auto;
-  height: auto;
-  background: var(--bg-deep);
-  animation: backdrop-in 0.25s ease both;
-}
-
-.is-expanded .plaque-stage img,
-.is-expanded .plaque-stage iframe {
-  max-width: 100vw;
-  max-height: 100vh;
-}
-
-.is-expanded .plaque-stage iframe {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
+  background: none;
+}
+
+/* Percentages against the viewport-tracking stage: fully visible, no
+   scroll, centered by the stage's own grid. */
+.is-expanded .plaque-stage img,
+.is-expanded .plaque-stage iframe {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.is-expanded .plaque-stage iframe {
+  width: 100%;
+  height: 100%;
 }
 
 /* The procedural canvas sizes itself inline, so the override needs weight. */
@@ -320,9 +340,26 @@ body {
   height: min(100vw, 100vh) !important;
 }
 
+.plaque-panel {
+  transition: opacity 0.35s ease;
+}
+
 .is-expanded .plaque-panel,
 .is-expanded .plaque-audio-hint {
+  opacity: 0;
   visibility: hidden;
+  transition:
+    opacity 0.35s ease,
+    visibility 0s 0.35s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plaque-backdrop,
+  .plaque-panel,
+  .is-expanded .plaque-panel,
+  .is-expanded .plaque-audio-hint {
+    transition: none;
+  }
 }
 
 .plaque-close {
@@ -337,12 +374,6 @@ body {
 
 .mode-touch .plaque-stage {
   touch-action: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .is-expanded .plaque-stage {
-    animation: none;
-  }
 }
 
 /* Sounding pieces need a gesture before the browser lets them play. */

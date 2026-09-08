@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { Piece } from '../types'
 import { mediaVariant } from '../data/loader'
 import { useFocusTrap } from '../hooks/useFocusTrap'
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import { ProceduralArt } from './ProceduralArt'
 
 interface PlaqueProps {
@@ -19,10 +20,45 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
   closeRef.current = onClose
   /** Set while a touch drag is in flight, so its final click is swallowed. */
   const draggedRef = useRef(false)
+  const reducedMotion = usePrefersReducedMotion()
+  /** The artwork's rect captured just before a fullscreen toggle (FLIP). */
+  const flipFromRef = useRef<DOMRect | null>(null)
+
+  const artEl = () =>
+    stageRef.current?.querySelector<HTMLElement>('img, canvas, iframe') ?? null
+
+  // Both directions animate: capture where the artwork is, let the layout
+  // jump, then in the layout effect below play it from there to its new home.
+  const setExpandedAnimated = (next: boolean) => {
+    if (!reducedMotion) flipFromRef.current = artEl()?.getBoundingClientRect() ?? null
+    setExpanded(next)
+  }
+
+  useLayoutEffect(() => {
+    const first = flipFromRef.current
+    flipFromRef.current = null
+    const art = artEl()
+    if (!first || !art) return
+    const last = art.getBoundingClientRect()
+    if (last.width === 0 || last.height === 0) return
+    const dx = first.left + first.width / 2 - (last.left + last.width / 2)
+    const dy = first.top + first.height / 2 - (last.top + last.height / 2)
+    art.style.transition = 'none'
+    art.style.transform = `translate(${dx}px, ${dy}px) scale(${first.width / last.width}, ${first.height / last.height})`
+    // Force a style flush so the inverse transform is the transition's
+    // start state, then release it in the same tick.
+    void art.getBoundingClientRect()
+    art.style.transition = 'transform 0.5s cubic-bezier(0.22, 0.7, 0.3, 1)'
+    art.style.transform = ''
+    const timer = window.setTimeout(() => {
+      art.style.transition = ''
+    }, 550)
+    return () => window.clearTimeout(timer)
+  }, [expanded])
 
   // Escape steps back: out of fullscreen first, then out of the plaque.
   useFocusTrap(dialogRef, () => {
-    if (expandedRef.current) setExpanded(false)
+    if (expandedRef.current) setExpandedAnimated(false)
     else onClose()
   })
 
@@ -117,9 +153,9 @@ export function Plaque({ piece, onClose }: PlaqueProps) {
       draggedRef.current = false
       return
     }
-    // A sounding generator owns its clicks (they start the music).
-    if (live && piece.audio) return
-    setExpanded((current) => !current)
+    // Sounding pieces never expand — their clicks start the music.
+    if (piece.audio) return
+    setExpandedAnimated(!expandedRef.current)
   }
 
   const year = piece.mintDate.slice(0, 4)
